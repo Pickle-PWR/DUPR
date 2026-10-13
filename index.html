@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#12302c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PicklePWR_DUP">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<title>PicklePWR_DUP</title>
+<style>
+:root{--bg:#f5f8f7;--card:#fff;--ink:#17332f;--muted:#6d7d79;--accent:#54b7a3;--accent2:#9ad8cc;--danger:#d95d5d;--line:#dce8e4;--dark:#12302c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink)}
+header{background:var(--dark);color:#fff;padding:18px 22px;position:sticky;top:0;z-index:10}
+header h1{margin:0;font-size:22px}header small{opacity:.75}
+main{max-width:1250px;margin:auto;padding:18px}
+.grid{display:grid;grid-template-columns:480px 1fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 2px 10px #12302c0a}
+h2,h3{margin:0 0 12px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}
+input,select,button{font:inherit}input[type=text],input[type=number],select{width:100%;padding:9px;border:1px solid var(--line);border-radius:9px}
+button{border:0;border-radius:9px;padding:10px 13px;cursor:pointer;background:var(--accent);color:#fff;font-weight:700}
+button.secondary{background:#e8f2ef;color:var(--ink)}button.danger{background:var(--danger)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat{background:#f0f7f5;border-radius:10px;padding:10px;text-align:center}.stat b{display:block;font-size:20px}
+.playerlist{max-height:650px;overflow:auto;margin-top:10px;padding-right:4px}.player-header{display:grid;grid-template-columns:24px 1fr 1fr 108px;gap:8px;align-items:center;padding:7px 4px;background:#f0f7f5;border:1px solid var(--line);border-radius:9px;margin-bottom:6px;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}.player{display:grid;grid-template-columns:24px minmax(0,1fr) minmax(0,1fr) 108px;gap:8px;align-items:center;border-bottom:1px solid #edf2f0;padding:9px 4px}.player input[type=checkbox]{width:18px;height:18px;margin:0}.player .name-input,.player .dupr-input{width:100%;min-width:0;padding:8px;border:1px solid var(--line);border-radius:8px}.player .fieldwrap{min-width:0}.player .status{display:block;color:var(--muted);font-size:10px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.player .leavebtn{width:108px;padding:7px 6px;font-size:10px;white-space:normal;line-height:1.15}.playerlist-title{font-size:11px;color:var(--muted);margin:0 0 6px}.roundbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.roundbtn{background:#eef3f1;color:var(--ink);padding:8px 10px}.roundbtn.active{background:var(--accent);color:#fff}.roundbtn.locked{outline:2px solid #17332f;background:#dfece9}
+.courts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.court{border:1px solid var(--line);border-radius:14px;padding:13px;background:#fbfdfc}.court.unavailable{opacity:.7;border-style:dashed}.court.unavailable .empty{min-height:110px;display:flex;align-items:center;justify-content:center;text-align:center}.courthead{display:flex;justify-content:space-between;font-weight:800;margin-bottom:10px}
+.team{background:#f2f7f5;border-radius:10px;padding:10px;margin:6px 0}.teamlabel{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}.teamnames{font-size:15px;font-weight:750}.player-name-choice{display:inline;border:0;background:transparent;color:var(--ink);padding:2px 3px;font:inherit;font-weight:800;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer;border-radius:5px}.player-name-choice:hover{background:#dff2ec}.replace-overlay{position:fixed;inset:0;background:#102b27aa;z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px}.replace-dialog{background:white;color:var(--ink);width:min(480px,100%);max-height:85vh;overflow:auto;border-radius:16px;padding:18px;box-shadow:0 12px 45px #0003}.replace-list{display:grid;gap:8px;margin-top:14px}.replace-option{background:#e8f2ef;color:var(--ink);text-align:left;padding:12px;border:1px solid var(--line)}.replace-option:hover{background:#d6eee7}.vs{text-align:center;color:var(--muted);font-size:12px;font-weight:800;margin:5px 0}.scorebox{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.scorelabel{font-size:11px;font-weight:800;color:var(--muted);margin-bottom:4px}.scorebox input{width:100%;text-align:center;font-size:22px;font-weight:800;padding:10px}
+.score{display:flex;gap:8px;margin-top:9px}.score input{width:50%;text-align:center;font-size:18px}
+.complete{color:#247a63;font-size:12px;font-weight:800}.lockedtag{color:#17332f;background:#dfece9;border-radius:20px;padding:4px 8px;font-size:11px}
+.tablewrap{overflow:auto}.stats{width:100%;border-collapse:collapse}.stats th,.stats td{padding:8px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}.stats th{background:#f0f7f5}
+.notice{padding:10px;border-radius:10px;background:#fff6dc;color:#765b12;font-size:13px;margin-bottom:12px}.timing-note{font-size:12px;color:var(--muted)}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+@media(max-width:1050px){.grid{grid-template-columns:1fr}}
+@media(max-width:620px){.player-header{grid-template-columns:24px 1fr 1fr}.player-header span:last-child{display:none}.player{grid-template-columns:24px 1fr 1fr;align-items:start}.player .leavebtn{grid-column:2 / 4;width:100%;margin-top:2px}.player .status{font-size:9px}.statrow{grid-template-columns:repeat(3,1fr)}}
+
+/* iPad touch layout */
+body{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+button,input,select{touch-action:manipulation}
+input,select,textarea{font-size:16px}
+button{min-height:44px}
+input[type=checkbox]{accent-color:var(--accent)}
+main{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+@media(min-width:900px){.grid{grid-template-columns:minmax(360px,.9fr) minmax(0,1.35fr);gap:14px}main{padding:14px}}
+@media(min-width:900px) and (max-width:1180px){.card{padding:13px}.player-header,.player{grid-template-columns:22px minmax(0,1fr) minmax(0,1fr) 88px;gap:5px}.player .leavebtn{width:88px;padding:7px 4px}.courts{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}}
+@media(max-width:899px){.grid{grid-template-columns:1fr}}
+@media(max-width:620px){header{padding:calc(14px + env(safe-area-inset-top)) 14px 14px}header h1{font-size:19px}main{padding:10px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}.card{padding:12px;border-radius:13px}.player-header{grid-template-columns:24px minmax(0,1fr) minmax(0,1fr)}.player-header span:last-child{display:none}.player{grid-template-columns:24px minmax(0,1fr) minmax(0,1fr);align-items:start;gap:6px}.player .leavebtn{grid-column:2 / 4;width:100%;margin-top:2px}.player .status{font-size:10px}.statrow{grid-template-columns:repeat(3,minmax(0,1fr))}.stat{padding:8px 4px;font-size:12px}.stat b{font-size:18px}.actions button{flex:1 1 auto}.roundbar{gap:6px}.roundbtn{padding:10px}.scorebox input{min-height:48px}}
+@media(hover:none) and (pointer:coarse){button,.player-name-choice{min-height:44px}.player-name-choice{padding:6px 4px}.player input[type=checkbox]{width:22px;height:22px;margin-top:8px}}
+#offlineStatus{margin:10px 0 0;padding:8px 10px;border-radius:9px;background:#e8f2ef;color:var(--ink);font-size:12px;font-weight:700}
+
+</style>
+</head>
+<body>
+<header><h1>⚡ PICKLEPWR_DUP</h1><small>Live rounds • no-repeat partners • fair game distribution • locked history • late-player support</small></header>
+<main>
+<div id="offlineStatus" role="status">Offline-ready app: loading…</div>
+<div class="grid">
+<section>
+<div class="card">
+<h2>Tournament Control</h2>
+<div class="controls">
+<div><label>Available courts</label><select id="courtCount"></select></div>
+<div><label>Rounds from available time</label><input id="roundCountDisplay" type="text" readonly></div>
+<div><label>Event name</label><input type="text" id="eventName" value="PICKLEPWR DUPR GAME"></div>
+<div><label>Event date</label><input type="date" id="eventDate"></div>
+<div><label>Start time</label><input type="time" id="startTime" value="12:00"></div>
+<div><label>End time</label><input type="time" id="endTime" value="14:00"></div>
+<div><label>Game time (minutes)</label><input type="number" id="roundMinutes" min="1" max="180" value="10"></div>
+<div><label>Score recording time (minutes)</label><input type="number" id="recordMinutes" min="0" max="30" value="2"></div>
+</div>
+<div class="actions">
+<button onclick="generate()">Generate / Rebalance</button>
+<button class="secondary" onclick="addPlayer()">+ Player</button>
+<button type="button" class="secondary" onclick="exportScheduleExcel()">📋 Export Schedule Excel</button>
+<button type="button" class="secondary" onclick="exportDUPRExcel()">📊 Export DUPR Excel</button>
+<button class="danger" onclick="resetAll()">Reset</button>
+</div>
+<div class="notice" style="margin-top:12px"><b>Time-based scheduling:</b> The number of rounds is calculated automatically from Start Time → End Time ÷ (Game Time + Score Recording Time). There is no fixed 8-game limit per player. Games are balanced across the available players for the full available time.</div><div class="notice" style="margin-top:12px"><b>Pairing rule:</b> The scheduler avoids repeat partners as a hard priority whenever a valid alternative exists. It then minimizes repeat opponents and balances games.</div>
+<div class="notice" style="margin-top:12px">Schedule Excel and DUPR Excel are separate exports. The DUPR export always remains available, including incomplete data.</div>
+<div id="scheduleDownloadArea" style="display:none;margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#f0f7f5">
+  <b>✅ Schedule Excel file is ready:</b>
+  <a id="scheduleDownloadLink" href="#" download style="display:inline-block;margin-left:8px;background:var(--accent);color:white;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700">Download Schedule Excel</a>
+</div>
+<div id="downloadArea" style="display:none;margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#f0f7f5">
+  <b>✅ DUPR Excel file is ready:</b>
+  <a id="duprDownloadLink" href="#" download style="display:inline-block;margin-left:8px;background:var(--accent);color:white;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700">Download DUPR Excel</a>
+</div>
+<div class="statrow">
+<div class="stat"><b id="activeCount">0</b>Players</div>
+<div class="stat"><b id="usedCourts">0</b>Courts</div>
+<div class="stat"><b id="lockedCount">0</b>Locked</div>
+<div class="stat"><b id="roundsAvailable">0</b>Rounds</div>
+</div>
+</div>
+
+<div class="card" style="margin-top:16px">
+<h3>Players</h3>
+<div class="notice">Tick YES/NO for the roster. Use <b>Rest</b> when a player is tired or injured. In an unlocked current round, they are automatically replaced by an active waiting player, then rest from future rounds. Locked rounds are never changed, and Rest never locks a round. Scores for a changed game are cleared.</div>
+<div style="display:flex;gap:8px;margin-bottom:10px">
+  <input type="text" id="playerSearch" placeholder="🔎 Search player name or DUPR ID..." oninput="renderPlayers()">
+  <button class="secondary" onclick="clearPlayerSearch()">Clear</button>
+</div>
+<div class="player-header"><span>ON</span><span>PLAYER NAME</span><span>DUPR ID</span><span>ACTION</span></div>
+<div class="playerlist" id="players"></div>
+</div>
+</section>
+
+<section>
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+<h2>Rounds</h2><div id="roundInfo" class="muted"></div>
+</div>
+<div class="roundbar" id="roundbar"></div>
+<div id="roundView"></div>
+</div>
+
+<div class="card" style="margin-top:16px">
+<h2>🏆 Live Wins Leaderboard</h2>
+<div class="notice">Rankings update automatically as scores are entered. Players are ranked by wins, then win percentage.</div>
+<div class="tablewrap"><table class="stats"><thead><tr><th>Rank</th><th>Player</th><th>Games</th><th>Wins</th><th>Losses</th><th>Win %</th></tr></thead><tbody id="stats"></tbody></table></div>
+</div>
+</section>
+</div>
+</main>
+<script>
+const MAX=44, MAX_COURTS=9, MAX_ROUNDS=100;
+const namesDefault=["Paul","Tinay","Player 3","Player 4","Player 5","Player 6","Player 7","Player 8","Player 9","Player 10","Player 11","Player 12","Player 13","Player 14","Player 15","Player 16","Player 17","Player 18","Player 19","Player 20","Player 21","Player 22","Player 23","Player 24","Player 25","Player 26","Player 27","Player 28","Player 29","Player 30","Player 31","Player 32","Player 33","Player 34"];
+let state=JSON.parse(localStorage.getItem("picklepwr_live_scheduler_offline_v1")||"null")||{players:namesDefault.map((name,i)=>({id:i+1,name,active:i<24,duprId:""})),courts:7,rounds:10,selected:1,roundsData:[]};
+state.courts=Math.min(MAX_COURTS,Math.max(1,parseInt(state.courts)||7));
+state.rounds=Math.max(1,parseInt(state.rounds)||10);
+if(state.players.length<MAX){ for(let i=state.players.length;i<MAX;i++) state.players.push({id:i+1,name:`Player ${i+1}`,active:false,duprId:"",leaveFromRound:null}); } state.players=state.players.slice(0,MAX); state.players.forEach((p,i)=>{p.id=i+1;if(p.leaveFromRound===undefined)p.leaveFromRound=null;});
+function save(){localStorage.setItem("picklepwr_live_scheduler_offline_v1",JSON.stringify(state))}
+function setup(){
+ const cc=document.getElementById("courtCount");
+ cc.innerHTML=Array.from({length:MAX_COURTS},(_,i)=>`<option>${i+1}</option>`).join("");
+ cc.value=state.courts;
+ document.getElementById("eventName").value=state.eventName||"PICKLEPWR DUPR GAME";
+ document.getElementById("eventDate").value=state.eventDate||"";
+ document.getElementById("startTime").value=state.startTime||"12:00";
+ document.getElementById("endTime").value=state.endTime||"14:00";
+ document.getElementById("roundMinutes").value=state.roundMinutes||10;
+ document.getElementById("recordMinutes").value=state.recordMinutes??2;
+ ["eventName","eventDate","startTime","endTime","roundMinutes","recordMinutes"].forEach(id=>document.getElementById(id).onchange=()=>{
+   state.eventName=document.getElementById("eventName").value.trim()||"PICKLEPWR DUPR GAME";
+   state.eventDate=document.getElementById("eventDate").value||"";
+   state.startTime=document.getElementById("startTime").value||"12:00";
+   state.endTime=document.getElementById("endTime").value||"14:00";
+   state.roundMinutes=Math.max(1,parseInt(document.getElementById("roundMinutes").value)||10);
+   state.recordMinutes=Math.max(0,parseInt(document.getElementById("recordMinutes").value)||0);
+   syncRoundsFromTime(true);
+   save(); render();
+ });
+ cc.onchange=()=>{state.courts=Math.min(MAX_COURTS,Math.max(1,+cc.value));save();render()};
+ syncRoundsFromTime(false);
+ render();
+}
+function availableMinutes(){
+ const start=state.startTime||"12:00", end=state.endTime||"14:00";
+ const [sh,sm]=start.split(":").map(Number), [eh,em]=end.split(":").map(Number);
+ let mins=(eh*60+em)-(sh*60+sm);
+ if(mins<=0) mins+=24*60;
+ return mins;
+}
+function calculatedRounds(){
+ const slot=state.roundMinutes+state.recordMinutes;
+ if(slot<=0)return 0;
+ return Math.max(0,Math.floor(availableMinutes()/slot));
+}
+function syncRoundsFromTime(showAlert){
+ const calc=calculatedRounds();
+ const locked=state.roundsData.filter(r=>r.locked).length;
+ if(calc<locked){
+   state.rounds=locked;
+   if(showAlert) alert("The selected time window is shorter than the number of locked rounds. Locked rounds were preserved; extend the end time or adjust the game/score-recording time to create additional future rounds.");
+ }else{
+   state.rounds=calc;
+   state.roundsData=state.roundsData.slice(0,state.rounds);
+   state.selected=Math.min(Math.max(1,state.selected),Math.max(1,state.rounds));
+ }
+ const el=document.getElementById("roundCountDisplay");
+ if(el)el.value=state.rounds+" rounds"+(state.rounds!==calc?" (locked rounds preserved)":"");
+}
+function render(){syncRoundsFromTime(false);renderPlayers();renderRounds();renderStats();document.getElementById("activeCount").textContent=state.players.filter(p=>p.active).length;document.getElementById("usedCourts").textContent=usedCourts();document.getElementById("lockedCount").textContent=state.roundsData.filter(r=>r.locked).length;document.getElementById("roundsAvailable").textContent=state.rounds;const el=document.getElementById("roundCountDisplay");if(el)el.value=state.rounds+" rounds"+(state.rounds!==calculatedRounds()?" (locked rounds preserved)":"")}
+function usedCourts(){return Math.min(state.courts,Math.floor(state.players.filter(p=>p.active && !p.leaveFromRound).length/4))}
+function eligibleForRound(p,roundNo){return !!p && p.active && (!p.leaveFromRound || roundNo < p.leaveFromRound)}
+function renderPlayers(){
+ const q=(document.getElementById("playerSearch")?.value||"").trim().toLowerCase();
+ const list=state.players.filter(p=>!q || p.name.toLowerCase().includes(q) || String(p.duprId||"").toLowerCase().includes(q));
+ document.getElementById("players").innerHTML=list.map(p=>{
+   const stopped=!!p.leaveFromRound;
+   const status=stopped?`<small>Stopped from R${p.leaveFromRound}</small>`:`<small>${p.active?"Playing":"Inactive"}</small>`;
+   const action=stopped?`<button class="secondary leavebtn" onclick="returnPlayer(${p.id})">↩ Return</button>`:`<button class="secondary leavebtn" onclick="restPlayer(${p.id})">⏸ Rest</button>`;
+   return `<div class="player"><input type="checkbox" ${p.active?"checked":""} onchange="togglePlayer(${p.id},this.checked)" title="Active / inactive"><div class="fieldwrap"><input class="name-input" type="text" value="${esc(p.name)}" placeholder="Player name" onchange="rename(${p.id},this.value)"><small class="status">${status.replace(/<small>|<\/small>/g,"")}</small></div><div class="fieldwrap"><input class="dupr-input" type="text" value="${esc(p.duprId||"")}" placeholder="DUPR ID" onchange="setDupr(${p.id},this.value)"><small class="status">${p.duprId?"DUPR ID saved":"Enter DUPR ID (optional)"}</small></div>${action}</div>`;
+ }).join("") || `<div class="empty">No players found.</div>`;
+}
+function clearPlayerSearch(){const e=document.getElementById("playerSearch");if(e)e.value="";renderPlayers();}
+function togglePlayer(id,on){const p=state.players.find(p=>p.id===id);if(!p)return;p.active=on;if(on)p.leaveFromRound=null;save();render()}
+function restPlayer(id){
+ const p=state.players.find(p=>p.id===id); if(!p)return;
+ const r=state.selected;
+ const rd=state.roundsData[r-1];
+ let swappedCurrent=false;
+ // If the player is scheduled in the selected round, substitute immediately ONLY when that round is unlocked.
+ // Locked rounds are immutable: Rest must never alter their players, courts, or scores.
+ if(rd && !rd.locked && Array.isArray(rd.games)){
+   const gameIndex=rd.games.findIndex(g=>[...(g.t1||[]),...(g.t2||[])].includes(p.id));
+   if(gameIndex>=0){
+     const usedThisRound=new Set(rd.games.flatMap(g=>[...(g.t1||[]),...(g.t2||[])]));
+     const waiting=state.players.filter(x=>x.id!==p.id && x.active && !x.leaveFromRound && eligibleForRound(x,r) && !usedThisRound.has(x.id));
+     if(waiting.length){
+       const incoming=waiting[0];
+       const g=rd.games[gameIndex];
+       let replaced=false;
+       for(const side of ['t1','t2']){
+         const slot=(g[side]||[]).indexOf(p.id);
+         if(slot>=0){g[side][slot]=incoming.id;replaced=true;break;}
+       }
+       if(replaced){
+         // A lineup change invalidates only this game's score; do not lock the round.
+         g.s1='';g.s2='';g.complete=false;
+         swappedCurrent=true;
+       }
+     }
+   }
+ }
+ p.active=true;
+ p.leaveFromRound=r+1;
+ // Rebuild only future unlocked rounds, preserving every round through the selected round
+ // and every locked round exactly as recorded.
+ const history={};
+ state.players.forEach(x=>history[x.id]={games:0,partners:{},opponents:{}});
+ for(let ri=0;ri<state.rounds;ri++){
+   const existing=state.roundsData[ri] || {round:ri+1,locked:false,games:[]};
+   if(ri<=r-1 || existing.locked){
+     (existing.games||[]).forEach(g=>accumulate(history,g));
+     continue;
+   }
+   const roundNo=ri+1;
+   const active=state.players.filter(x=>x.active && !x.leaveFromRound && eligibleForRound(x,roundNo));
+   const courts=Math.min(state.courts,Math.floor(active.length/4));
+   const games=courts>0?buildRound(active,courts,history):[];
+   state.roundsData[ri]={round:roundNo,locked:false,games};
+   games.forEach(g=>accumulate(history,g));
+ }
+ save();render();
+ if(swappedCurrent){
+   alert(`${p.name} is resting. An active waiting player has replaced them in the current unlocked round, and future unlocked rounds have been updated. The round was not locked. The affected game's scores were cleared.`);
+ }else if(rd?.locked){
+   alert(`${p.name} will rest from Round ${r+1} onward. The current round is locked, so its players, courts, and scores were left unchanged. No round was automatically locked.`);
+ }else{
+   alert(`${p.name} will rest from Round ${r+1} onward. No available waiting player could replace them in the current round, so the current lineup was left unchanged. No round was locked.`);
+ }
+}
+function returnPlayer(id){const p=state.players.find(p=>p.id===id);if(!p)return;p.active=true;p.leaveFromRound=null;save();generate();}
+function rename(id,n){n=n.trim()||("Player "+id);state.players.find(p=>p.id===id).name=n;save();render()}
+function setDupr(id,v){state.players.find(p=>p.id===id).duprId=v.trim();save();render()}
+function setDuprId(id,v){state.players.find(p=>p.id===id).duprId=v.trim();save()}
+function addPlayer(){let p=state.players.find(p=>!p.active);if(!p)return alert("Maximum 44 players.");p.active=true;p.leaveFromRound=null;save();render()}
+function generate(){
+ const locked=state.roundsData.filter(r=>r.locked).length;
+ const currentEligible=state.players.filter(p=>p.active && !p.leaveFromRound && eligibleForRound(p,locked+1));
+ if(currentEligible.length<4 && locked<state.rounds)return alert("At least 4 eligible players are required for the next unlocked round.");
+ for(let r=locked;r<state.rounds;r++){state.roundsData[r]={round:r+1,locked:false,games:[]}}
+ // Keep history for every player, including anyone who has withdrawn.
+ const history={}; state.players.forEach(p=>history[p.id]={games:0,partners:{},opponents:{}});
+ for(let ri=0;ri<locked;ri++)for(const g of state.roundsData[ri].games||[])accumulate(history,g);
+ for(let ri=locked;ri<state.rounds;ri++){
+   const active=state.players.filter(p=>p.active && !p.leaveFromRound && eligibleForRound(p,ri+1));
+   const courts=Math.min(state.courts,Math.floor(active.length/4));
+   const games=courts>0?buildRound(active,courts,history):[];
+   state.roundsData[ri]={round:ri+1,locked:false,games};
+   games.forEach(g=>accumulate(history,g));
+ }
+ state.selected=Math.min(state.selected,state.rounds);save();render();
+}
+function accumulate(h,g){
+ const ids=[...g.t1,...g.t2];ids.forEach(id=>h[id].games++);
+ for(const a of g.t1)for(const b of g.t1)if(a!==b)h[a].partners[b]=(h[a].partners[b]||0)+1;
+ for(const a of g.t2)for(const b of g.t2)if(a!==b)h[a].partners[b]=(h[a].partners[b]||0)+1;
+ for(const a of g.t1)for(const b of g.t2){h[a].opponents[b]=(h[a].opponents[b]||0)+1;h[b].opponents[a]=(h[b].opponents[a]||0)+1}
+}
+function pairKey(a,b){return a<b?`${a}-${b}`:`${b}-${a}`}
+
+function buildRound(active,courts,h){
+ const n=Math.min(courts,Math.floor(active.length/4));
+ if(n<1)return [];
+
+ /*
+  HARD RULE:
+  A pair that has already been partners is forbidden whenever a valid
+  non-repeating solution exists for the round.
+  We search many candidate rounds and give repeated partnerships an
+  effectively prohibitive cost. Game-count balance remains the next
+  priority, followed by opponent repetition.
+ */
+ let best=null,bestCost=Infinity;
+
+ for(let attempt=0;attempt<1200;attempt++){
+   const shuffled=active.slice().sort((a,b)=>{
+     const ga=h[a.id]?.games||0, gb=h[b.id]?.games||0;
+     return (ga-gb) || (Math.random()-.5);
+   });
+
+   const selected=shuffled.slice(0,n*4);
+
+   // Try to construct groups of four with no previous partnership.
+   const groups=[];
+   let remaining=selected.slice();
+   let failed=false;
+
+   for(let c=0;c<n;c++){
+     let bestGroup=null,bestGroupCost=Infinity;
+
+     // Randomized candidate groups. Prefer players with lower game counts.
+     for(let gtry=0;gtry<100;gtry++){
+       if(remaining.length<4)break;
+       const cand=remaining.slice().sort((a,b)=>(Math.random()-.5)).slice(0,4);
+
+       // Partner repeat is the hard constraint.
+       let repeat=0, opponentPotential=0, gameSpread=0;
+       for(let i=0;i<4;i++){
+         for(let j=i+1;j<4;j++){
+           const cnt=(h[cand[i].id]?.partners?.[cand[j].id]||0);
+           repeat += cnt;
+         }
+       }
+
+       for(const p of cand) gameSpread += (h[p.id]?.games||0);
+
+       // Only permit a repeated partner if we cannot find any zero-repeat group.
+       let cost=repeat*100000 + gameSpread*0.01 + Math.random();
+
+       if(cost<bestGroupCost){
+         bestGroupCost=cost;
+         bestGroup=cand;
+       }
+     }
+
+     if(!bestGroup){failed=true;break;}
+     groups.push(bestGroup);
+     const ids=new Set(bestGroup.map(p=>p.id));
+     remaining=remaining.filter(p=>!ids.has(p.id));
+   }
+
+   if(failed || groups.length!==n)continue;
+
+   const games=[];
+   let totalCost=0;
+
+   for(let c=0;c<n;c++){
+     const group=groups[c];
+
+     // Evaluate all 2+2 splits.
+     const splits=[
+       [[0,1],[2,3]],
+       [[0,2],[1,3]],
+       [[0,3],[1,2]]
+     ];
+
+     let chosen=null,splitCost=Infinity;
+
+     for(const split of splits){
+       const t1=split[0].map(i=>group[i].id);
+       const t2=split[1].map(i=>group[i].id);
+
+       let cost=0;
+       // Partner repeats: effectively forbidden if another split has none.
+       const partnerRepeats=
+         (h[t1[0]]?.partners?.[t1[1]]||0)+
+         (h[t2[0]]?.partners?.[t2[1]]||0);
+
+       cost += partnerRepeats*100000;
+
+       // Repeated opponents are strongly discouraged, but allowed.
+       for(const a of t1)for(const b of t2){
+         cost += (h[a]?.opponents?.[b]||0)*100;
+       }
+
+       // Favor players with fewer previous games.
+       for(const id of [...t1,...t2])cost += (h[id]?.games||0);
+
+       if(cost<splitCost){
+         splitCost=cost;
+         chosen=[t1,t2];
+       }
+     }
+
+     games.push({
+       court:c+1,
+       t1:chosen[0],
+       t2:chosen[1],
+       s1:"",
+       s2:"",
+       complete:false
+     });
+
+     totalCost+=splitCost;
+   }
+
+   // Overall fairness: minimize difference between highest/lowest game count.
+   const counts=selected.map(p=>h[p.id]?.games||0);
+   const spread=Math.max(...counts)-Math.min(...counts);
+   totalCost += spread*500;
+
+   // Strongly reject any candidate containing a repeat partner if a
+   // zero-repeat candidate is found.
+   const repeats=groups.reduce((sum,g)=>{
+     for(let i=0;i<g.length;i++)for(let j=i+1;j<g.length;j++)
+       sum+=(h[g[i].id]?.partners?.[g[j].id]||0);
+     return sum;
+   },0);
+
+   totalCost += repeats*10000000;
+
+   if(totalCost<bestCost){
+     bestCost=totalCost;
+     best=games;
+     if(repeats===0 && spread<=1)break;
+   }
+ }
+
+ return best||[];
+}
+
+function lockRound(r){
+ const rd=state.roundsData[r-1];if(!rd||!rd.games.length)return alert("Generate the schedule first.");
+ if(rd.locked && rd.scoreEditMode){rd.scoreEditMode=false;save();render();return;}
+ if(rd.locked)return alert("Round "+r+" is already locked. Use Unlock Score Editing to correct a score.");
+ // Scores are optional when locking. Blank scores can be entered or corrected later via Unlock Score Editing.
+ rd.locked=true;rd.scoreEditMode=false;
+ // Lock preserves assignments; score-edit mode only permits corrections to scores.
+ save();render();
+}
+function toggleScoreEdit(r){
+ const rd=state.roundsData[r-1];
+ if(!rd||!rd.locked)return alert("Lock this round before using score correction mode.");
+ if(!rd.scoreEditMode&&!confirm("Unlock score editing for Round "+r+"? Court assignments and the round lock stay protected."))return;
+ rd.scoreEditMode=!rd.scoreEditMode;save();render();
+}
+function updateScore(r,gi,side,val){const g=state.roundsData[r-1].games[gi];g[side]=val===""?"":Math.max(0,parseInt(val)||0);g.complete=g.s1!==""&&g.s2!=="";save();renderRoundsOnly()}
+function addMinutesToClock(clock, mins){
+ const [hh,mm]=clock.split(":").map(Number);
+ const d=new Date(2000,0,1,hh,mm,0,0);
+ d.setMinutes(d.getMinutes()+mins);
+ return d;
+}
+function fmtClock(d){return d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});}
+function roundTiming(roundNo){
+ const start=addMinutesToClock(state.startTime,(roundNo-1)*(state.roundMinutes+state.recordMinutes));
+ const gameEnd=new Date(start.getTime()+state.roundMinutes*60000);
+ const recordEnd=new Date(gameEnd.getTime()+state.recordMinutes*60000);
+ return {start,gameEnd,recordEnd};
+}
+function roundTime(roundNo){
+ const t=roundTiming(roundNo);
+ return `${fmtClock(t.start)}–${fmtClock(t.gameEnd)}`;
+}
+function roundRecordTime(roundNo){
+ const t=roundTiming(roundNo);
+ if(state.recordMinutes<=0)return "";
+ return `${fmtClock(t.gameEnd)}–${fmtClock(t.recordEnd)}`;
+}
+function tournamentEndFromRounds(){
+ const t=roundTiming(Math.max(1,state.rounds));
+ return t.recordEnd;
+}
+function renderRounds(){
+ const rb=document.getElementById("roundbar");rb.innerHTML="";
+ for(let i=1;i<=state.rounds;i++){let rd=state.roundsData[i-1];let b=document.createElement("button");b.className="roundbtn "+(state.selected===i?"active ":"")+(rd?.locked?"locked":"");b.textContent="R"+i+" • "+roundTime(i)+(state.recordMinutes>0?" + "+state.recordMinutes+"m":"")+(rd?.locked?" 🔒":"");b.onclick=()=>{state.selected=i;save();renderRounds()};rb.appendChild(b)}
+ renderRoundsOnly();
+}
+function renderRoundsOnly(){
+ const r=state.selected,rd=state.roundsData[r-1];
+ document.getElementById("roundInfo").textContent=(rd?.locked?"LOCKED — assignments cannot change":"LIVE — future rounds can be rebalanced")+" • Game: "+roundTime(r)+(state.recordMinutes>0?" • Score recording: "+roundRecordTime(r):"");
+ const v=document.getElementById("roundView");
+ if(!rd||!rd.games?.length){v.innerHTML=`<div class="empty">No schedule yet. Click <b>Generate / Rebalance</b>.</div>`;return}
+ const playableByCourt={}; (rd.games||[]).forEach((g,i)=>playableByCourt[g.court]={g,i});
+ // A locked round must keep showing every court that was actually used, even if the current court setting is later reduced.
+ const highestSavedCourt=(rd.locked?(rd.games||[]).reduce((max,g)=>Math.max(max,Number(g.court)||0),0):0);
+ const totalCourts=Math.max(1,Math.min(MAX_COURTS,parseInt(state.courts)||1,MAX_COURTS),highestSavedCourt);
+ const courtCards=Array.from({length:totalCourts},(_,idx)=>{const courtNo=idx+1; const item=playableByCourt[courtNo]; if(!item)return `<div class="court unavailable"><div class="courthead"><span>Court ${courtNo}</span><span class="lockedtag">NOT IN USE</span></div><div class="empty">No game scheduled on this court for this round.<br><small>Requires 4 eligible players.</small></div></div>`; const g=item.g,i=item.i; return `<div class="court">
+ <div class="courthead"><span>Court ${g.court}</span><span style="color:var(--muted);font-size:12px">PLAY ${roundTime(r)}</span>${rd.locked?'<span class="lockedtag">🔒 LOCKED</span>':''}</div>
+ <div class="team"><div class="teamlabel">TEAM 1</div><div class="teamnames">${names(g.t1,rd.locked?null:r,i)}</div></div><div class="vs">VS</div><div class="team"><div class="teamlabel">TEAM 2</div><div class="teamnames">${names(g.t2,rd.locked?null:r,i)}</div></div>
+ <div class="scorebox"><div><div class="scorelabel">TEAM 1 SCORE</div><input type="number" min="0" placeholder="0" value="${g.s1}" ${(rd.locked&&!rd.scoreEditMode)?"disabled":""} onchange="updateScore(${r},${i},'s1',this.value)"></div><div><div class="scorelabel">TEAM 2 SCORE</div><input type="number" min="0" placeholder="0" value="${g.s2}" ${(rd.locked&&!rd.scoreEditMode)?"disabled":""} onchange="updateScore(${r},${i},'s2',this.value)"></div></div>
+ ${g.complete?'<div class="complete">✓ SCORE COMPLETE</div>':''}
+ </div>`;}).join("");
+ v.innerHTML=`<div class="notice"><b>⏱ Game:</b> ${roundTime(r)} ${state.recordMinutes>0?` &nbsp; <b>📝 Score recording:</b> ${roundRecordTime(r)} — players report scores during this window.`:""}</div><div class="courts">${courtCards}</div>
+ <div class="actions">${rd.locked?`<button class="secondary" onclick="toggleScoreEdit(${r})">${rd.scoreEditMode?"✏️ Stop Score Editing":"🔓 Unlock Score Editing"}</button>${rd.scoreEditMode?`<button onclick="lockRound(${r})">✅ Finish Corrections</button>`:""}`:`<button onclick="lockRound(${r})">🔒 Lock Round ${r}</button>`}<button class="secondary" onclick="generate()">↻ Rebalance Future Rounds</button></div>`;
+}
+
+function changePlayerInGame(roundNo, gameIndex, outgoingId){
+ const rd=state.roundsData[roundNo-1];
+ if(!rd || rd.locked) return alert("Players can only be changed in an unlocked round. Locked round history is protected.");
+ const game=rd.games[gameIndex]; if(!game)return;
+ const inGame=new Set([...game.t1,...game.t2]);
+ if(!inGame.has(outgoingId))return;
+ const usedThisRound=new Set((rd.games||[]).flatMap(g=>[...g.t1,...g.t2]));
+ // Replacement options must be marked active and eligible for this round, and waiting off-court.
+ const waiting=state.players.filter(p=>p.active && !p.leaveFromRound && eligibleForRound(p,roundNo) && !usedThisRound.has(p.id));
+ if(!waiting.length) return alert("There are no active waiting players available for this round.");
+ const outgoing=state.players.find(p=>p.id===outgoingId);
+ const overlay=document.createElement("div");
+ overlay.className="replace-overlay";
+ overlay.setAttribute("role","dialog");
+ overlay.setAttribute("aria-modal","true");
+ overlay.innerHTML=`<div class="replace-dialog"><h3>Replace ${esc(outgoing?.name||("Player "+outgoingId))}</h3><p>Click an active waiting player to take this position on Court ${game.court}. Inactive and resting players are not shown.</p><div class="replace-list">${waiting.map(p=>`<button class="replace-option" type="button" data-player-id="${p.id}">${esc(p.name)}${p.duprId?` <small>• DUPR ${esc(p.duprId)}</small>`:""}</button>`).join("")}</div><div class="actions"><button class="secondary" type="button" data-cancel>Cancel</button></div></div>`;
+ overlay.addEventListener("click",ev=>{if(ev.target===overlay||ev.target.closest("[data-cancel]")){overlay.remove();return;}const btn=ev.target.closest("[data-player-id]");if(!btn)return;const incomingId=Number(btn.dataset.playerId);const incoming=state.players.find(p=>p.id===incomingId);if(!incoming||!incoming.active||incoming.leaveFromRound||!eligibleForRound(incoming,roundNo)||usedThisRound.has(incoming.id)){overlay.remove();alert("That player is no longer available. Please choose another active waiting player.");return;}
+   const slot=game.t1.indexOf(outgoingId);if(slot>=0)game.t1[slot]=incoming.id;else{const slot2=game.t2.indexOf(outgoingId);if(slot2<0){overlay.remove();return;}game.t2[slot2]=incoming.id;}
+   game.s1="";game.s2="";game.complete=false;save();overlay.remove();render();
+ });
+ document.body.appendChild(overlay);
+}
+function names(ids, roundNo=null, gameIndex=null){
+ return ids.map(id=>{const p=state.players.find(x=>x.id===id);const label=esc(p?.name||("Player "+id));if(roundNo===null)return label;return `<button type="button" class="player-name-choice" title="Click to replace this player" onclick="changePlayerInGame(${roundNo},${gameIndex},${id})">${label}</button>`;}).join(" + ");
+}
+
+function renderStats(){
+ const map={};
+ // Live leaderboard shows all players currently marked Active, including players stopped for future rounds.
+ state.players.filter(p=>p.active).forEach(p=>map[p.id]={p,g:0,w:0,l:0});
+ state.roundsData.forEach(rd=>(rd?.games||[]).forEach(g=>{
+   if(g.s1===""||g.s2==="")return;
+   const a=+g.s1,b=+g.s2;
+   g.t1.forEach(id=>{if(map[id]){map[id].g++; if(a>b)map[id].w++; else if(a<b)map[id].l++;}});
+   g.t2.forEach(id=>{if(map[id]){map[id].g++; if(b>a)map[id].w++; else if(b<a)map[id].l++;}});
+ }));
+ const list=Object.values(map).sort((a,b)=>{
+   if(b.w!==a.w)return b.w-a.w;
+   const aw=a.g?a.w/a.g:0,bw=b.g?b.w/b.g:0;
+   if(bw!==aw)return bw-aw;
+   return a.p.name.localeCompare(b.p.name);
+ });
+ document.getElementById("stats").innerHTML=list.map((x,i)=>{
+   const pct=x.g?((x.w/x.g)*100).toFixed(1)+"%":"—";
+   return `<tr><td><b>${i+1}</b></td><td><b>${x.p.leaveFromRound?`<span title="Resting" style="color:#dc2626;font-weight:900;margin-right:6px">●</span>`:""}${esc(x.p.name)}</b>${x.p.leaveFromRound?` <small style="color:#dc2626;font-weight:700">RESTING</small>`:""}</td><td>${x.g}</td><td><b>${x.w}</b></td><td>${x.l}</td><td>${pct}</td></tr>`;
+ }).join("") || `<tr><td colspan="6" class="empty">No active players.</td></tr>`;
+}
+
+function dupField(v){return String(v??"").replace(/"/g,'""')}
+function playerById(id){return state.players.find(p=>p.id===id)}
+function dupDate(){return state.eventDate || ""}
+
+function getCompletedMatches(){
+ const matches=[];
+ state.roundsData.forEach(rd=>(rd?.games||[]).forEach(g=>{
+   // Include every scheduled game. Blank/incomplete fields remain blank in the export.
+   const a1=playerById(g.t1[0]),a2=playerById(g.t1[1]),b1=playerById(g.t2[0]),b2=playerById(g.t2[1]);
+   matches.push({rd,g,a1,a2,b1,b2});
+ }));
+ return matches;
+}
+
+function buildDuprRows(){
+ const headers=["matchType","event","date","playerA1","playerA1DuprId","playerA1ExternalId","playerA2","playerA2DuprId","playerA2ExternalId","playerB1","playerB1DuprId","playerB1ExternalId","playerB2","playerB2DuprId","playerB2ExternalId","teamAGame1","teamBGame1","teamAGame2","teamBGame2","teamAGame3","teamBGame3","teamAGame4","teamBGame4","teamAGame5","teamBGame5","location","scoreType"];
+ const rows=[headers];
+ getCompletedMatches().forEach(({g,a1,a2,b1,b2})=>{
+   rows.push([
+     "D",
+     state.eventName || "",
+     dupDate(),
+     a1?.name || "", a1?.duprId || "", a1?.externalId || "",
+     a2?.name || "", a2?.duprId || "", a2?.externalId || "",
+     b1?.name || "", b1?.duprId || "", b1?.externalId || "",
+     b2?.name || "", b2?.duprId || "", b2?.externalId || "",
+     g.s1, g.s2,
+     "", "",
+     "", "",
+     "", "",
+     "", "",
+     "Salah Aldeen Sports Club",
+     ""
+   ]);
+ });
+ return {headers,rows};
+}
+
+function downloadBlob(blob,name){
+  const url=URL.createObjectURL(blob);
+  const area=document.getElementById("downloadArea");
+  const link=document.getElementById("duprDownloadLink");
+
+  if(area && link){
+    if(window._duprDownloadUrl) URL.revokeObjectURL(window._duprDownloadUrl);
+    window._duprDownloadUrl=url;
+    link.href=url;
+    link.download=name;
+    link.textContent="⬇ Download DUPR Excel: "+name;
+    link.style.display="inline-block";
+    area.style.display="block";
+  }
+
+  // Do not depend on automatic download. The visible link is the reliable action.
+}
+
+function exportScheduleExcel(){
+  const rows=[[
+    "Round","Time","Court",
+    "Team 1 Player 1","Team 1 Player 2",
+    "Team 2 Player 1","Team 2 Player 2",
+    "Team 1 Score","Team 2 Score","Result","Locked"
+  ]];
+
+  state.roundsData.forEach(rd=>(rd?.games||[]).forEach(g=>{
+    const p1=playerById(g.t1[0]),p2=playerById(g.t1[1]);
+    const p3=playerById(g.t2[0]),p4=playerById(g.t2[1]);
+    let result="";
+    if(g.s1!=="" && g.s2!==""){
+      result=(+g.s1>+g.s2)?"Team 1":(+g.s2>+g.s1)?"Team 2":"Tie";
+    }
+    rows.push([
+      rd.round,
+      roundTime(rd.round),
+      g.court,
+      p1?.name||"",p2?.name||"",
+      p3?.name||"",p4?.name||"",
+      g.s1??"",g.s2??"",
+      result,
+      rd.locked?"YES":"NO"
+    ]);
+  }));
+
+  const esc=v=>String(v??"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+
+  const cell=v=>{
+    const value=String(v??"");
+    const numeric=value!=="" && /^-?\d+(\\.\\d+)?$/.test(value);
+    return '<Cell><Data ss:Type="'+(numeric?'Number':'String')+'">'+esc(value)+'</Data></Cell>';
+  };
+
+  let xml='<?xml version="1.0" encoding="UTF-8"?>';
+  xml+='<?mso-application progid="Excel.Sheet"?>';
+  xml+='<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ';
+  xml+='xmlns:o="urn:schemas-microsoft-com:office:office" ';
+  xml+='xmlns:x="urn:schemas-microsoft-com:office:excel" ';
+  xml+='xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" ';
+  xml+='xmlns:html="http://www.w3.org/TR/REC-html40">';
+  xml+='<Worksheet ss:Name="Schedule"><Table>';
+  rows.forEach(row=>xml+='<Row>'+row.map(cell).join('')+'</Row>');
+  xml+='</Table></Worksheet></Workbook>';
+
+  const filename=(state.eventName||"PICKLEPWR")
+    .replace(/[^a-z0-9]+/gi,"_")
+    .replace(/^_+|_+$/g,"")+"_Schedule.xls";
+
+  // Separate schedule download link so it cannot overwrite the DUPR link.
+  const blob=new Blob([xml],{type:"application/vnd.ms-excel;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  const scheduleArea=document.getElementById("scheduleDownloadArea");
+  const scheduleLink=document.getElementById("scheduleDownloadLink");
+  if(scheduleArea && scheduleLink){
+    if(window._scheduleDownloadUrl) URL.revokeObjectURL(window._scheduleDownloadUrl);
+    window._scheduleDownloadUrl=url;
+    scheduleLink.href=url;
+    scheduleLink.download=filename;
+    scheduleLink.textContent="⬇ Download Schedule Excel: "+filename;
+    scheduleArea.style.display="block";
+  }
+}
+
+function exportDUPRExcel(){
+  const result=buildDuprRows();
+  const headers=result.headers;
+  const rows=result.rows;
+
+  // Always export, even when there are no scheduled games.
+  const esc=v=>String(v ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+
+  const xmlCell=v=>{
+    const value=String(v ?? "");
+    const isNumber=value!=="" && /^-?\\d+(\\.\\d+)?$/.test(value);
+    return '<Cell><Data ss:Type="'+(isNumber?'Number':'String')+'">'+esc(value)+'</Data></Cell>';
+  };
+
+  let xml='<?xml version="1.0" encoding="UTF-8"?>';
+  xml+='<?mso-application progid="Excel.Sheet"?>';
+  xml+='<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ';
+  xml+='xmlns:o="urn:schemas-microsoft-com:office:office" ';
+  xml+='xmlns:x="urn:schemas-microsoft-com:office:excel" ';
+  xml+='xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" ';
+  xml+='xmlns:html="http://www.w3.org/TR/REC-html40">';
+  xml+='<Worksheet ss:Name="DUPR Record"><Table>';
+
+  // Always write the 27 required headers.
+  xml+='<Row>'+headers.map(xmlCell).join('')+'</Row>';
+
+  // Write all scheduled games; blanks remain blank.
+  rows.slice(1).forEach(row=>{
+    xml+='<Row>'+row.map(xmlCell).join('')+'</Row>';
+  });
+
+  xml+='</Table></Worksheet></Workbook>';
+
+  const safeName=(state.eventName || "PICKLEPWR_DUPR")
+    .replace(/[^a-z0-9]+/gi,"_")
+    .replace(/^_+|_+$/g,"") || "PICKLEPWR_DUPR";
+
+  const filename=safeName+"_DUPR.xls";
+  const blob=new Blob([xml],{type:"application/vnd.ms-excel;charset=utf-8"});
+
+  downloadBlob(blob,filename);
+}
+
+function resetAll(){if(!confirm("Reset the entire tournament?"))return;localStorage.removeItem("picklepwr_live_scheduler_offline_v1");location.reload()}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+setup();
+</script>
+
+<script>
+(function(){
+ const status=document.getElementById('offlineStatus');
+ function showStatus(){
+   if(!status)return;
+   status.textContent = navigator.onLine ? '✓ PicklePWR_DUP is ready. Offline support is enabled after this app has been opened online once.' : '● Offline mode: PicklePWR_DUP is running from the saved app files.';
+ }
+ window.addEventListener('online',showStatus); window.addEventListener('offline',showStatus); showStatus();
+ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+   window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').then(function(){
+     if(status) status.textContent = navigator.onLine ? '✓ Offline setup ready. Open this app once online, then it can load without internet.' : '● Offline mode: app files are available locally.';
+   }).catch(function(){if(status)status.textContent='Offline caching could not be enabled. Open the app online and try again.';});});
+ } else if(status){status.textContent='For offline launch, install this app from its HTTPS website using Add to Home Screen.';}
+})();
+</script>
+</body>
+</html>
